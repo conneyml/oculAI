@@ -13,7 +13,8 @@ import imutils
 import time
 import dlib
 import cv2
-from datetime import datetime
+from datetime import datetime, timedelta
+import pandas as pd
 
 
 def eye_aspect_ratio(eye):
@@ -69,7 +70,8 @@ vs = VideoStream(src=0).start()
 # vs = VideoStream(usePiCamera=True).start()
 fileStream = False
 time.sleep(1.0)
-
+#Create dataframe to storage the timestamp of the blinks
+df_blinks = pd.DataFrame(columns=['timestamp'])
 
 # loop over frames from the video stream
 while True:
@@ -125,6 +127,9 @@ while True:
 			# then increment the total number of blinks
 			if FRAME_COUNTER >= EYE_AR_CONSEC_FRAMES:
 				TOTAL_BLINKS += 1
+				df_blinks.loc[len(df_blinks.index)] = datetime.now()
+				df_blinks = df_blinks[(datetime.now() - df_blinks['timestamp']).map(timedelta.total_seconds) < 60]
+
 				# wait for at least 0.5 sec until next blink
 				time.sleep(0.5)
 
@@ -133,11 +138,9 @@ while True:
 
 		# draw the total number of blinks on the frame along with
 		# the computed eye aspect ratio for the frame
-		cv2.putText(frame, "Blinks: {}".format(TOTAL_BLINKS), (10, 30),
+		cv2.putText(frame, "Blinks per min: {}".format(df_blinks.shape[0]), (10, 30),
 					cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 		cv2.putText(frame, "EAR: {:.2f}".format(ear), (300, 30),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-		cv2.putText(frame, "BLINK RATE: {:.2f}".format(ear), (10, 215),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
  
 	# show the frame
