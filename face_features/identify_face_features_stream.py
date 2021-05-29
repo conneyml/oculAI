@@ -60,7 +60,7 @@ while True:
     # Exit when escape is pressed
     if cv2.waitKey(delay=1) == 27:
         #saving the df with all the info about the points
-        df_points.to_csv('face_features.csv')
+        df_points.to_csv('oculAI/face_features/output_csv/face_features.csv')
         break
 
 # When everything done, release the video capture and video write objects
