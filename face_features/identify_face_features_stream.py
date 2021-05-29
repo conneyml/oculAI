@@ -10,9 +10,8 @@ predictor = dlib.shape_predictor("oculAI/face_features/shape_predictor_68_face_l
 
 # read the image
 #This line for getting the image from your webcam
-cap = cv2.VideoCapture(0)
-#This line for getting the image from a saved image
-img = cv2.imread("trump.jpeg")
+#cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('oculAI/blink_detection_demo.mp4')
 
 cols = [str(n) for n in range(0, 68)]
 df_points = pd.DataFrame(columns=cols)
@@ -21,7 +20,9 @@ frame = 0
 
 while True:
     frame += 1
-    _, frame = cap.read()
+    ret, frame = cap.read()
+    if not ret:
+        break
     # Convert image into grayscale
     gray = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
 
@@ -54,17 +55,20 @@ while True:
 
 
 
-    # show the image
-    cv2.imshow(winname="Face", mat=frame)
+        # show the image
+        cv2.imshow(winname="Face", mat=frame)
 
-    # Exit when escape is pressed
-    if cv2.waitKey(delay=1) == 27:
-        #saving the df with all the info about the points
-        df_points.to_csv('oculAI/face_features/output_csv/face_features.csv')
-        break
+        # Exit when escape is pressed
+        if cv2.waitKey(delay=1) == 27:
+            break
+
 
 # When everything done, release the video capture and video write objects
 cap.release()
 
 # Close all windows
 cv2.destroyAllWindows()
+
+# saving the df with all the info about the points
+if not df_points.empty:
+    df_points.to_csv('oculAI/face_features/output_csv/face_features.csv')
