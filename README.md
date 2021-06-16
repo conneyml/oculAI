@@ -1,2 +1,2 @@
 # oculAI
-Ocular diseases detection using Artificial Intelligence
+Drowsiness detection and prediction system using Computer Vision, Machine Learning and Deep Learning. 
